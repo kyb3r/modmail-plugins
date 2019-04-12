@@ -35,7 +35,7 @@ class ProfanityFilter:
         self.enabled = config.get('enabled', True)
         self.whitelist = config.get('whitelist', self.whitelist)
 
-    @commands.group()
+    @commands.group(invoke_without_command=True)
     @commands.is_owner()
     async def profanity(self, ctx, mode: bool):
         """Disable or enable the profanity filter.
