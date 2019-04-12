@@ -11,7 +11,6 @@ class ProfanityFilter:
         self.coll = bot.plugin_db.get_partition(self)
         self.enabled = True
 
-    
     @commands.command()
     @commands.is_owner()
     async def profanity(self, ctx, mode: bool):
@@ -21,10 +20,11 @@ class ProfanityFilter:
         '''
         self.enabled = mode
 
-        await self.coll.update_one({
-            '_id': 'config', 
-            'enabled': self.enabled
-            })
+        await self.coll.update_one(
+            {'_id': 'config'},
+            {'$set': {'enabled': self.enabled}, 
+            upsert=True
+            )
         
         await ctx.send('Enabled' if mode else 'Disabled' + ' the profanity filter.')
     
