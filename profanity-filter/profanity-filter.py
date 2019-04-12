@@ -10,6 +10,11 @@ class ProfanityFilter:
         self.bot = bot
         self.coll = bot.plugin_db.get_partition(self)
         self.enabled = True
+        asyncio.create_task(self._set_config())
+
+    async def _set_config(self):
+        config = await self.coll.find_one({'_id': 'config'})
+        self.enabled = config['enabled']
 
     @commands.command()
     @commands.is_owner()
@@ -28,10 +33,6 @@ class ProfanityFilter:
         
         await ctx.send('Enabled' if mode else 'Disabled' + ' the profanity filter.')
     
-    async def on_connect(self):
-        config = await self.coll.find_one({'_id': 'config'})
-        self.enabled = config['enabled']
-
     async def on_message(self, message):
         if not self.enabled:
             return
