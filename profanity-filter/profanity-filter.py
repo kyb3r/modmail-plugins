@@ -1,6 +1,6 @@
 import asyncio
 import discord
-from discord import Member, Role, TextChannel
+from discord import Member, Role, TextChannel, DMChannel
 from discord.ext import commands
 from typing import Union
 
@@ -35,7 +35,7 @@ class ProfanityFilter:
         self.enabled = config.get('enabled', True)
         self.whitelist = config.get('whitelist', self.whitelist)
 
-    @commands.group(invoke_without_subcommand=True)
+    @commands.group()
     @commands.is_owner()
     async def profanity(self, ctx, mode: bool):
         """Disable or enable the profanity filter.
@@ -89,7 +89,10 @@ class ProfanityFilter:
         channel = message.channel
         author = message.author 
 
-        if channel.permissions_for(author).administrator:
+        if isinstance(channel, DMChannel):
+            return
+
+        if author.guild_permissions.administrator:
             return
 
         if any(r.id in self.whitelist['roles'] for r in author.roles):
