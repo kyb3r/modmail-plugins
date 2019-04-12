@@ -22,7 +22,7 @@ class ProfanityFilter:
         self.enabled = mode
 
         await self.coll.update_one({
-            '_id', 'config', 
+            '_id': 'config', 
             'enabled': self.enabled
             })
         
