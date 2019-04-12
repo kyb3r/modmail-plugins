@@ -52,8 +52,8 @@ class ProfanityFilter:
         
         await ctx.send(('Enabled' if mode else 'Disabled') + ' the profanity filter.')
     
-    @profanity.command()
     @commands.is_owner()
+    @profanity.command()
     async def whitelist(self, ctx, target: Union[Member, Role, TextChannel]):
         """Whitelist a user, role or channel from the profanity filter.
         
@@ -89,7 +89,7 @@ class ProfanityFilter:
         channel = message.channel
         author = message.author 
 
-        if isinstance(channel, DMChannel):
+        if isinstance(author, discord.User): # private channel
             return
 
         if author.guild_permissions.administrator:
