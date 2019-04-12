@@ -50,12 +50,13 @@ class ProfanityFilter:
     
     @commands.is_owner()
     @profanity.command()
-    async def whitelist(self, ctx, target: Union[Member, Role, TextChannel]):
+    async def whitelist(ctx, target: Union[Member, Role, TextChannel]):
         """Whitelist a user, role or channel from the profanity filter.
         
         Usage: `profanity whitelist @dude`
         """
 
+        self = ctx.bot.get_cog('ProfanityFilter') # wtf where did self dissapear
 
         if target.id in self.whitelist:
             self.whitelist.remove(target.id)
