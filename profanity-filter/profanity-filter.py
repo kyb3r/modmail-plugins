@@ -11,8 +11,9 @@ class ProfanityFilter:
         self.coll = bot.plugin_db.get_partition(self)
         self.enabled = True
 
-    @commands.is_owner()
+    
     @commands.command()
+    @commands.is_owner()
     async def profanity(self, ctx, mode: bool):
         '''Disable or enable the profanity filter.
         
