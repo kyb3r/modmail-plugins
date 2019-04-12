@@ -1,6 +1,6 @@
 import asyncio
 import discord
-from discord import Member, Role
+from discord import Member, Role, TextChannel
 from discord.ext import commands
 from typing import Union
 
@@ -25,7 +25,8 @@ class ProfanityFilter:
         self.enabled = True
         self.whitelist = {
             'roles': [],
-            'users': []
+            'members': [],
+            'text_channels': []
         }
         asyncio.create_task(self._set_config())
 
@@ -53,19 +54,19 @@ class ProfanityFilter:
     
     @profanity.command()
     @commands.is_owner()
-    async def whitelist(self, ctx, role_or_user: Union[Member, Role]):
-        """Whitelist a user or a role from the profanity filter.
+    async def whitelist(self, ctx, target: Union[Member, Role, TextChannel]):
+        """Whitelist a user, role or channel from the profanity filter.
         
         Usage: `profanity whitelist @dude`
         """
 
-        key = 'users' if isinstance(role_or_user, Member) else 'roles'
+        key = target.__class__.__name__.lower() + 's'
 
-        if role_or_user.id in self.whitelist[key]:
-            self.whitelist[key].remove(role_or_user.id)
+        if target.id in self.whitelist[key]:
+            self.whitelist[key].remove(target.id)
             removed = True
         else:
-            self.whitelist[key].append(role_or_user.id)
+            self.whitelist[key].append(target.id)
             removed = False
 
         await self.coll.update_one(
@@ -76,7 +77,7 @@ class ProfanityFilter:
         
         await ctx.send(
             f'{'Un-w' if removed else 'W'}hitelisted '
-            f'{role_or_user.mention} from the profanity filter.'
+            f'{target.mention} from the profanity filter.'
             )
 
     
@@ -94,7 +95,10 @@ class ProfanityFilter:
         if any(r.id in self.whitelist['roles'] for r in author.roles):
             return
         
-        if author.id in self.whitelist['users']:
+        if author.id in self.whitelist['members']:
+            return
+
+        if channel.id in self.whitelist['text_channels']:
             return
 
         profane = bool(predict([message.content])[0])
