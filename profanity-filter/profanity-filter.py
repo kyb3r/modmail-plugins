@@ -23,13 +23,13 @@ class ProfanityFilter:
         self.bot = bot
         self.coll = bot.plugin_db.get_partition(self)
         self.enabled = True
-        self.whitelist = []
+        self.whitelist = set()
         asyncio.create_task(self._set_config())
 
     async def _set_config(self):
         config = await self.coll.find_one({'_id': 'config'})
         self.enabled = config.get('enabled', True)
-        self.whitelist = config.get('whitelist', [])
+        self.whitelist = set(config.get('whitelist', []))
 
     @commands.group(invoke_without_command=True)
     @commands.is_owner()
@@ -62,12 +62,12 @@ class ProfanityFilter:
             self.whitelist.remove(target.id)
             removed = True
         else:
-            self.whitelist.append(target.id)
+            self.whitelist.add(target.id)
             removed = False
 
         await self.coll.update_one(
             {'_id': 'config'},
-            {'$set': {'whitelist': self.whitelist}}, 
+            {'$set': {'whitelist': list(self.whitelist)}}, 
             upsert=True
             )
         
@@ -88,9 +88,8 @@ class ProfanityFilter:
         if isinstance(author, discord.User): # private channel
             return
 
-        ids = [author.id, channel.id] + [r.id for r in author.roles]
-        
-        if any(o.id in self.whitelist for o in ids):
+        ids = {author.id, channel.id} |= {r.id for r in author.roles}
+        if self.whitelist.union(ids):
             return
 
         profane = bool(predict([message.content])[0])
