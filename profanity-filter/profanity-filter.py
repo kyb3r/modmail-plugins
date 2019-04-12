@@ -6,6 +6,17 @@ from profanity_check import predict
 
 
 class ProfanityFilter:
+    """
+    A simple filter that checks for profanity in a message and 
+    then deletes it. Many profanity detection libraries use a hard-coded 
+    list of bad words to detect and filter profanity, however this 
+    plugin utilises a library that uses a linear support vector machine 
+    (SVM) model trained on 200k human-labeled samples of clean and profane 
+    text strings. ([`profanity-check`](https://github.com/vzhou842/profanity-check)).
+
+    Artificial intelligence in a discord bot? Heck yeah!
+    """
+
     def __init__(self, bot):
         self.bot = bot
         self.coll = bot.plugin_db.get_partition(self)
@@ -19,10 +30,10 @@ class ProfanityFilter:
     @commands.command()
     @commands.is_owner()
     async def profanity(self, ctx, mode: bool):
-        '''Disable or enable the profanity filter.
+        """Disable or enable the profanity filter.
         
         Usage: `profanity enable` / `profanity disable` 
-        '''
+        """
         self.enabled = mode
 
         await self.coll.update_one(
