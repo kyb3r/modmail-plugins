@@ -22,7 +22,7 @@ class ProfanityFilter:
 
         await self.coll.update_one(
             {'_id': 'config'},
-            {'$set': {'enabled': self.enabled}, 
+            {'$set': {'enabled': self.enabled}}, 
             upsert=True
             )
         
