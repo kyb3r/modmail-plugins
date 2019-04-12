@@ -76,8 +76,8 @@ class ProfanityFilter:
             )
         
         await ctx.send(
-            f'{'Un-w' if removed else 'W'}hitelisted '
-            f'{target.mention} from the profanity filter.'
+            f"{'Un-w' if removed else 'W'}hitelisted "
+            f"{target.mention} from the profanity filter."
             )
 
     
