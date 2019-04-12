@@ -88,7 +88,8 @@ class ProfanityFilter:
         if isinstance(author, discord.User): # private channel
             return
 
-        ids = [author.id, channel.id].extend(r.id for r in author.roles)
+        ids = [author.id, channel.id] + [r.id for r in author.roles]
+        
         if any(o.id in self.whitelist for o in ids):
             return
 
