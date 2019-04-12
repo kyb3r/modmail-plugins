@@ -88,10 +88,11 @@ class ProfanityFilter:
         if isinstance(author, discord.User): # private channel
             return
 
+
         ids = {author.id, channel.id} 
         ids.update({r.id for r in author.roles})
 
-        if self.whitelist.union(ids):
+        if self.whitelist.intersection(ids): # anything intersects
             return
 
         profane = bool(predict([message.content])[0])
