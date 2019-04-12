@@ -23,17 +23,13 @@ class ProfanityFilter:
         self.bot = bot
         self.coll = bot.plugin_db.get_partition(self)
         self.enabled = True
-        self.whitelist = {
-            'roles': [],
-            'members': [],
-            'text_channels': []
-        }
+        self.whitelist = []
         asyncio.create_task(self._set_config())
 
     async def _set_config(self):
         config = await self.coll.find_one({'_id': 'config'})
         self.enabled = config.get('enabled', True)
-        self.whitelist = config.get('whitelist', self.whitelist)
+        self.whitelist = config.get('whitelist', [])
 
     @commands.group(invoke_without_command=True)
     @commands.is_owner()
@@ -60,13 +56,12 @@ class ProfanityFilter:
         Usage: `profanity whitelist @dude`
         """
 
-        key = target.__class__.__name__.lower() + 's'
 
-        if target.id in self.whitelist[key]:
-            self.whitelist[key].remove(target.id)
+        if target.id in self.whitelist:
+            self.whitelist.remove(target.id)
             removed = True
         else:
-            self.whitelist[key].append(target.id)
+            self.whitelist.append(target.id)
             removed = False
 
         await self.coll.update_one(
@@ -95,13 +90,8 @@ class ProfanityFilter:
         if author.guild_permissions.administrator:
             return
 
-        if any(r.id in self.whitelist['roles'] for r in author.roles):
-            return
-        
-        if author.id in self.whitelist['members']:
-            return
-
-        if channel.id in self.whitelist['text_channels']:
+        ids = [author.id, channel.id].extend(r.id for r in author.roles)
+        if any(o.id in self.whitelist for o in ids):
             return
 
         profane = bool(predict([message.content])[0])
