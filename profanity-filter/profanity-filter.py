@@ -42,7 +42,7 @@ class ProfanityFilter:
             upsert=True
             )
         
-        await ctx.send('Enabled' if mode else 'Disabled' + ' the profanity filter.')
+        await ctx.send(('Enabled' if mode else 'Disabled') + ' the profanity filter.')
     
     async def on_message(self, message):
         if not self.enabled:
