@@ -7,7 +7,7 @@ from typing import Union
 from profanity_check import predict
 
 
-class ProfanityFilter:
+class ProfanityFilter(commands.Cog):
     """
     A simple filter that checks for profanity in a message and 
     then deletes it. Many profanity detection libraries use a hard-coded 
@@ -76,7 +76,7 @@ class ProfanityFilter:
             f"{target.mention} from the profanity filter."
             )
 
-    
+    @commands.Cog.listener()
     async def on_message(self, message):
 
         if not self.enabled:
