@@ -7,7 +7,7 @@ from typing import Union
 from profanity_check import predict
 
 
-class ProfanityFilter:
+class ProfanityFilter(commands.Cog):
     """
     A simple filter that checks for profanity in a message and 
     then deletes it. Many profanity detection libraries use a hard-coded 
@@ -50,13 +50,11 @@ class ProfanityFilter:
     
     @commands.is_owner()
     @profanity.command()
-    async def whitelist(ctx, target: Union[Member, Role, TextChannel]):
+    async def whitelist(self, ctx, target: Union[Member, Role, TextChannel]):
         """Whitelist a user, role or channel from the profanity filter.
         
         Usage: `profanity whitelist @dude`
         """
-
-        self = ctx.bot.get_cog('ProfanityFilter') # wtf where did self dissapear
 
         if target.id in self.whitelist:
             self.whitelist.remove(target.id)
@@ -76,7 +74,7 @@ class ProfanityFilter:
             f"{target.mention} from the profanity filter."
             )
 
-    
+    @commands.Cog.listener()
     async def on_message(self, message):
 
         if not self.enabled:
