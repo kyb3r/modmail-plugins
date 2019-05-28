@@ -100,6 +100,7 @@ class Thread:
             "guild_id": str(self.bot.guild_id),
             "created_at": str(self.created_at),
             "closed_at": str(self.scheduled_close_at),
+            "closer": None,
             "recipient": {
                 "id": str(self.recipient.id),
                 "name": self.recipient.name,
