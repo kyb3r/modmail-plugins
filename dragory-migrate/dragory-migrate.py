@@ -235,11 +235,14 @@ class DragoryMigrate(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.output = ""
 
     @commands.command()
     @commands.is_owner()
     async def migratedb(self, ctx, url=None):
         """Migrates a database file to the mongo db."""
+
+        self.output = ""
         try:
             url = url or ctx.message.attachments[0].url
         except IndexError:
@@ -253,9 +256,7 @@ class DragoryMigrate(commands.Cog):
         conn = sqlite3.connect("dragorydb.sqlite")
         c = conn.cursor()
 
-        output = ""
         # Blocked Users
-
         for row in c.execute("SELECT * FROM 'blocked_users'"):
             # user_id
             # user_name
@@ -283,7 +284,7 @@ class DragoryMigrate(commands.Cog):
                 self.bot.config["snippets"] = {}
 
             self.bot.config.snippets[name] = value
-            output += f"Snippet {name} added: {value}\n"
+            self.output += f"Snippet {name} added: {value}\n"
 
         tasks = []
 
@@ -292,7 +293,6 @@ class DragoryMigrate(commands.Cog):
             prefix = ""
 
         async def convert_thread_log(row):
-            global output
             thread = await Thread.from_data(self.bot, row, c)
             converted = thread.serialize()
             key = secrets.token_hex(6)
@@ -301,7 +301,7 @@ class DragoryMigrate(commands.Cog):
             await self.bot.db.logs.insert_one(converted)
             log_url = f"{self.bot.config.log_url.strip('/')}{prefix}/{key}"
             print(f"Posted thread log: {log_url}")
-            output += f"Posted thread log: {log_url}"
+            self.output += f"Posted thread log: {log_url}"
 
         # Threads
         for row in c.execute("SELECT * FROM 'threads'"):
@@ -313,7 +313,7 @@ class DragoryMigrate(commands.Cog):
             await self.bot.config.update()
 
             async with self.bot.session.post(
-                "https://hasteb.in/documents", data=output
+                "https://hasteb.in/documents", data=self.output
             ) as resp:
                 key = (await resp.json())["key"]
 
