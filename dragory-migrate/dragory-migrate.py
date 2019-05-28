@@ -275,7 +275,7 @@ class DragoryMigrate(commands.Cog):
             if int(user_id) in USER_CACHE:
                 user = USER_CACHE[int(user_id)]
             else:
-                user = await bot.fetch_user(int(user_id))
+                user = await self.bot.fetch_user(int(user_id))
                 USER_CACHE[int(user_id)] = user
             self.bot.loop.create_task(ctx.invoke(cmd, user=user))
 
