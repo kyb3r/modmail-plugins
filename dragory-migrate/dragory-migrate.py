@@ -104,14 +104,14 @@ class Thread:
                 "id": str(self.recipient.id),
                 "name": self.recipient.name,
                 "discriminator": self.recipient.discriminator,
-                "avatar_url": self.recipient.avatar_url,
+                "avatar_url": str(self.recipient.avatar_url),
                 "mod": False,
             },
             "creator": {
                 "id": str(self.creator.id),
                 "name": self.creator.name,
                 "discriminator": self.creator.discriminator,
-                "avatar_url": self.creator.avatar_url,
+                "avatar_url": str(self.creator.avatar_url),
                 "mod": self.creator_mod,
             },
             "messages": [m.serialize() for m in self.messages if m.serialize()],
@@ -121,7 +121,7 @@ class Thread:
                 "id": str(self.closer.id),
                 "name": self.closer.name,
                 "discriminator": self.closer.discriminator,
-                "avatar_url": self.closer.avatar_url,
+                "avatar_url": str(self.closer.avatar_url),
                 "mod": True,
             }
         return payload
@@ -204,7 +204,7 @@ class ThreadMessage:
                     "id": str(self.author.id),
                     "name": self.author.name,
                     "discriminator": self.author.discriminator,
-                    "avatar_url": self.author.avatar_url,
+                    "avatar_url": str(self.author.avatar_url),
                     "mod": self.type_ == "to_user",
                 }
                 if self.author
