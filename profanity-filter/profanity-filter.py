@@ -27,9 +27,9 @@ class ProfanityFilter(commands.Cog):
         asyncio.create_task(self._set_config())
 
     async def _set_config(self):
-        config = await self.coll.find_one({'_id': 'config'})
-        self.enabled = config.get('enabled', True)
-        self.whitelist = set(config.get('whitelist', []))
+        config = await self.coll.find_one({"_id": "config"})
+        self.enabled = config.get("enabled", True)
+        self.whitelist = set(config.get("whitelist", []))
 
     @commands.group(invoke_without_command=True)
     @commands.is_owner()
@@ -41,13 +41,11 @@ class ProfanityFilter(commands.Cog):
         self.enabled = mode
 
         await self.coll.update_one(
-            {'_id': 'config'},
-            {'$set': {'enabled': self.enabled}}, 
-            upsert=True
-            )
-        
-        await ctx.send(('Enabled' if mode else 'Disabled') + ' the profanity filter.')
-    
+            {"_id": "config"}, {"$set": {"enabled": self.enabled}}, upsert=True
+        )
+
+        await ctx.send(("Enabled" if mode else "Disabled") + " the profanity filter.")
+
     @commands.is_owner()
     @profanity.command()
     async def whitelist(self, ctx, target: Union[Member, Role, TextChannel]):
@@ -64,30 +62,30 @@ class ProfanityFilter(commands.Cog):
             removed = False
 
         await self.coll.update_one(
-            {'_id': 'config'},
-            {'$set': {'whitelist': list(self.whitelist)}}, 
-            upsert=True
-            )
-        
+            {"_id": "config"},
+            {"$set": {"whitelist": list(self.whitelist)}},
+            upsert=True,
+        )
+
         await ctx.send(
             f"{'Un-w' if removed else 'W'}hitelisted "
             f"{target.mention} from the profanity filter."
-            )
+        )
 
     @commands.Cog.listener()
     async def on_message(self, message):
 
         if not self.enabled:
             return
-        
-        channel = message.channel
-        author = message.author 
 
-        if isinstance(author, discord.User): # private channel
+        channel = message.channel
+        author = message.author
+
+        if isinstance(author, discord.User):  # private channel
             return
 
         ids = {author.id, channel.id} | {r.id for r in author.roles}
-        if self.whitelist.intersection(ids): # anything intersects
+        if self.whitelist.intersection(ids):  # anything intersects
             return
 
         profane = bool(predict([message.content])[0])
@@ -97,10 +95,10 @@ class ProfanityFilter(commands.Cog):
         await message.delete()
 
         temp = await channel.send(
-            f'{author.mention} your message has '
-            'been deleted for containing profanity.'
-            )
-        
+            f"{author.mention} your message has "
+            "been deleted for containing profanity."
+        )
+
         await asyncio.sleep(5)
         await temp.delete()
 
