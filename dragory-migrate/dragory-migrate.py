@@ -240,7 +240,11 @@ class DragoryMigrate(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def migratedb(self, ctx, url=None):
-        """Migrates a database file to the mongo db."""
+        """Migrates a database file to the mongo db.
+        
+        Provide an sqlite file as the attachment or a url 
+        pointing to the sqlite db.
+        """
 
         self.output = ""
         try:
