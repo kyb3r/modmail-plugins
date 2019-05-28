@@ -95,7 +95,7 @@ class Thread:
     def serialize(self):
         """Turns it into a document"""
         payload = {
-            "open": self.status != "closed",
+            "open": bool(self.closer),
             "channel_id": str(self.channel_id),
             "guild_id": str(self.bot.guild_id),
             "created_at": str(self.created_at),
@@ -289,7 +289,6 @@ class DragoryMigrate(commands.Cog):
 
         with ctx.typing():
             await asyncio.gather(*tasks)
-            # TODO: Create channels for non-closed threads
 
             await self.bot.config.update()
 
