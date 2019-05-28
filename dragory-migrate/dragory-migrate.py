@@ -15,10 +15,19 @@ class Thread:
     statuses = {1: "open", 2: "closed", 3: "suspended"}
 
     __slots__ = [
-        "bot", "id", "status", "recipient", "creator",
-        "creator_mod", "closer", "channel_id", "created_at",
-        "scheduled_close_at", "scheduled_close_id", 
-        "alert_id", "messages",
+        "bot",
+        "id",
+        "status",
+        "recipient",
+        "creator",
+        "creator_mod",
+        "closer",
+        "channel_id",
+        "created_at",
+        "scheduled_close_at",
+        "scheduled_close_id",
+        "alert_id",
+        "messages",
     ]
 
     @classmethod
@@ -45,7 +54,7 @@ class Thread:
             self.recipient = bot.get_user(int(user_id))
             if self.recipient is None:
                 try:
-                    self.recipient = await bot.get_user_info(int(user_id))
+                    self.recipient = await bot.fetch_user(int(user_id))
                 except discord.NotFound:
                     self.recipient = None
         else:
@@ -165,7 +174,7 @@ class ThreadMessage:
             self.author = bot.get_user(int(user_id))
             if self.author is None:
                 try:
-                    self.author = await bot.get_user_info(int(user_id))
+                    self.author = await bot.fetch_user(int(user_id))
                 except discord.NotFound:
                     self.author = None
         else:
@@ -243,18 +252,10 @@ class DragoryMigrate(commands.Cog):
             # blocked_at
 
             user_id = row[0]
-            categ = self.bot.main_category
-            top_chan = categ.channels[0]  # bot-info
-            topic = str(top_chan.topic)
-            topic += "\n" + str(user_id)
 
-            if (
-                str(user_id) not in top_chan.topic
-            ):  # TODO: THIS IS NOT HOW WE BLOCK USERS ANYMORE
-                await top_chan.edit(topic=topic)
-                output += f"Blocked {user_id}\n"
-            else:
-                output += f"{user_id} already blocked\n"
+            cmd = self.bot.get_command('block')
+            user = await self.bot.fetch_user(int(user_id))
+            self.bot.loop.create_task(ctx.invoke(cmd, user=user))
 
         # Snippets
         for row in c.execute("SELECT * FROM 'snippets'"):
