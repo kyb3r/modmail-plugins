@@ -95,7 +95,7 @@ class Thread:
     def serialize(self):
         """Turns it into a document"""
         payload = {
-            "open": bool(self.closer),
+            "open": not bool(self.closer),
             "channel_id": str(self.channel_id),
             "guild_id": str(self.bot.guild_id),
             "created_at": str(self.created_at),
