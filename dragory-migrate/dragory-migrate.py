@@ -8,8 +8,6 @@ import secrets
 import discord
 from discord.ext import commands
 
-from core.models import Bot
-
 
 class Thread:
     statuses = {1: "open", 2: "closed", 3: "suspended"}
@@ -31,7 +29,7 @@ class Thread:
     ]
 
     @classmethod
-    async def from_data(cls, bot: Bot, data, cursor):
+    async def from_data(cls, bot, data, cursor):
         # id
         # status
         # is_legacy
@@ -153,7 +151,7 @@ class ThreadMessage:
     ]
 
     @classmethod
-    async def from_data(cls, bot: Bot, data):
+    async def from_data(cls, bot, data):
         # id
         # thread_id
         # message_type
@@ -222,7 +220,7 @@ class DragoryMigrate(commands.Cog):
     modmail bot to this one. 
     """
 
-    def __init__(self, bot: Bot):
+    def __init__(self, bot):
         self.bot = bot
 
     @commands.command()
