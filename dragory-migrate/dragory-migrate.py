@@ -215,8 +215,7 @@ class ThreadMessage:
 
 class DragoryMigrate(commands.Cog):
     """
-    Cog that migrates thread logs from 
-    [Dragory's](https://github.com/dragory/modmailbot) 
+    Cog that migrates thread logs from [Dragory's](https://github.com/dragory/modmailbot) 
     modmail bot to this one. 
     """
 
