@@ -301,7 +301,7 @@ class DragoryMigrate(commands.Cog):
             await self.bot.db.logs.insert_one(converted)
             log_url = f"{self.bot.config.log_url.strip('/')}{prefix}/{key}"
             print(f"Posted thread log: {log_url}")
-            self.output += f"Posted thread log: {log_url}"
+            self.output += f"Posted thread log: {log_url}\n"
 
         # Threads
         for row in c.execute("SELECT * FROM 'threads'"):
