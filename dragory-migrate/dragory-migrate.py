@@ -307,4 +307,4 @@ class DragoryMigrate(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Migrate(bot))
+    bot.add_cog(DragoryMigrate(bot))
