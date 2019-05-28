@@ -281,12 +281,11 @@ class DragoryMigrate(commands.Cog):
             converted["_id"] = key
             await self.bot.db.logs.insert_one(converted)
             log_url = f"{self.bot.config.log_url.strip('/')}{prefix}/{key}"
-            print(f"Posted thread log: {log_url}")
+            output += f"Posted thread log: {log_url}"
 
         # Threads
         for row in c.execute("SELECT * FROM 'threads'"):
             tasks.append(convert_thread_log(row))
-            output += f"Thread data added: {row[0]}\n"
 
         with ctx.typing():
             await asyncio.gather(*tasks)
