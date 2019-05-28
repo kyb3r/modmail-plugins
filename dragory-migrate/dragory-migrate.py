@@ -9,6 +9,9 @@ import discord
 from discord.ext import commands
 
 
+USER_CACHE = {}
+
+
 class Thread:
     statuses = {1: "open", 2: "closed", 3: "suspended"}
 
@@ -52,7 +55,12 @@ class Thread:
             self.recipient = bot.get_user(int(user_id))
             if self.recipient is None:
                 try:
-                    self.recipient = await bot.fetch_user(int(user_id))
+                    if int(user_id) in USER_CACHE:
+                        user = USER_CACHE[int(user_id)]
+                        self.recipient = user
+                    else:
+                        self.recipient = await bot.fetch_user(int(user_id))
+                        USER_CACHE[int(user_id)] = self.recipient
                 except discord.NotFound:
                     self.recipient = None
         else:
@@ -173,7 +181,12 @@ class ThreadMessage:
             self.author = bot.get_user(int(user_id))
             if self.author is None:
                 try:
-                    self.author = await bot.fetch_user(int(user_id))
+                    if int(user_id) in USER_CACHE:
+                        user = USER_CACHE[int(user_id)]
+                        self.author = user
+                    else:
+                        self.author = await bot.fetch_user(int(user_id))
+                        USER_CACHE[int(user_id)] = self.author
                 except discord.NotFound:
                     self.author = None
         else:
@@ -252,7 +265,12 @@ class DragoryMigrate(commands.Cog):
             user_id = row[0]
 
             cmd = self.bot.get_command('block')
-            user = await self.bot.fetch_user(int(user_id))
+
+            if int(user_id) in USER_CACHE:
+                user = USER_CACHE[int(user_id)]
+            else:
+                user = await bot.fetch_user(int(user_id))
+                USER_CACHE[int(user_id)] = user
             self.bot.loop.create_task(ctx.invoke(cmd, user=user))
 
         # Snippets
@@ -274,6 +292,7 @@ class DragoryMigrate(commands.Cog):
             prefix = ""
 
         async def convert_thread_log(row):
+            global output
             thread = await Thread.from_data(self.bot, row, c)
             converted = thread.serialize()
             key = secrets.token_hex(6)
@@ -281,6 +300,7 @@ class DragoryMigrate(commands.Cog):
             converted["_id"] = key
             await self.bot.db.logs.insert_one(converted)
             log_url = f"{self.bot.config.log_url.strip('/')}{prefix}/{key}"
+            print(f"Posted thread log: {log_url}")
             output += f"Posted thread log: {log_url}"
 
         # Threads
