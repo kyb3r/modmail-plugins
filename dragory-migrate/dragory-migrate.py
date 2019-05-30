@@ -270,7 +270,7 @@ class DragoryMigrate(commands.Cog):
 
             user_id = row[0]
 
-            cmd = self.bot.get_command('block')
+            cmd = self.bot.get_command("block")
 
             if int(user_id) in USER_CACHE:
                 user = USER_CACHE[int(user_id)]
